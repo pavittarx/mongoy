@@ -1,4 +1,8 @@
-from pymongo import MongoClient
+from datetime import datetime
+from pymongo import MongoClient, ReturnDocument
+
+import re
+
 
 class Collection:
     collection = None
@@ -12,7 +16,7 @@ class Collection:
         if len(args.items()) == 0:
             records = self.collection.find()
         else:
-            records = self.collection.find(args['query'])
+            records = self.collection.find(args["query"])
 
         docs = []
         for rec in records:
@@ -28,17 +32,46 @@ class Collection:
 
         if len(kwargs.items()) == 0:
             if type(docs) is list:
-                result = self.collection.insert_many(docs)
+                return self.collection.insert_many(
+                    {**docs, "created_at": datetime.now()}
+                )
             else:
-                result = self.collection.insert_one(docs)
+                return self.collection.insert_one(
+                    {**docs, "created_at": datetime.now()}
+                )
 
-        if "query" in kwargs:
-            if type(docs) is list:
-                result = self.collection.insert_many(docs, kwargs["query"])
+    def find_one_and_update(self, query, update, **kwargs):
+        if query is None:
+            raise Exception("Query Cannot be empty")
+
+        if update is None:
+            raise Exception("Update Cannot be empty")
+        
+        _update = {}
+        
+        for key in update.keys():
+            if re.search(r"\$.*", key) is not None:
+                _update[key] = update[key]
+            elif '$set' in _update.keys():
+                _update["$set"][key] = update[key]
             else:
-                result = self.collection.insert_one(docs, kwargs["query"])
+                _update["$set"] = {key: update[key]}
+                
 
-        return result
+        if len(kwargs.items()) == 0:
+            return self.collection.find_one_and_update(
+                query, _update, return_document=ReturnDocument.AFTER
+            )
+            
+        params = {}
+        
+        if "upsert" in kwargs.keys():
+            if kwargs["upsert"] == True:
+                params["upsert"] = True
+
+        return self.collection.find_one_and_update(
+            query, _update, return_document=ReturnDocument.AFTER, **params
+        )
 
 
 class Mongo:
