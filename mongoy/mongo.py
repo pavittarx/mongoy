@@ -3,7 +3,6 @@ from pymongo import MongoClient, ReturnDocument
 
 import re
 
-
 class Collection:
     collection = None
 
@@ -134,7 +133,7 @@ class Mongo:
     # def use_db(self, database):
     #     self.db = self.client[database]
 
-    def add_collection(self, collection):
+    def register_collection(self, collection):
         self.__dict__[collection] = Collection(self.db, collection)
 
     def get_db(self):
