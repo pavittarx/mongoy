@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="mongoy",                     # This is the name of the package
-    version="0.1.1",                        # The initial release version
+    version="0.1.3",                        # The initial release version
     author="pavittarx",                     # Full name of the author
     description="wrapper utility for mongodb",
     long_description=long_description,      # Long description read from the the readme file
@@ -18,6 +18,6 @@ setuptools.setup(
     ],                                      # Information to filter the project on PyPi website
     python_requires='>=3.6',                # Minimum version requirement of the package
     py_modules=["mongoy"],             # Name of the python package
-    package_dir={'':'mongoy'},     # Directory of the source code of the package
+    # package_dir={'':'mongoy'},     # Directory of the source code of the package
     install_requires=["pymongo"]                     # Install other dependencies if any
 )
