@@ -2,6 +2,7 @@ from datetime import datetime
 from pymongo import MongoClient, ReturnDocument
 
 import re
+import certifi
 
 class Collection:
     collection = None
@@ -127,7 +128,7 @@ class Mongo:
     db = None
 
     def __init__(self, connection, database):
-        self.client = MongoClient(connection)
+        self.client = MongoClient(connection, tlsCAFile=certifi.where())
         self.db = self.client[database]
 
     # def use_db(self, database):
